@@ -1,0 +1,12 @@
+[package]
+name = "forex-split"
+version = "0.1.0"
+edition = "2024"
+description = "Split a receipt in one currency into categories for bookkeeping in another currency."
+readme = "README.md"
+repository = "https://github.com/JonasEngstrom/forex-split"
+license = "MIT"
+keywords = ["bookkeeping", "accounting", "travel", "ynab", "budgeting"]
+categories = ["command-line-utilities", "finance", "mathematics"]
+
+[dependencies]
