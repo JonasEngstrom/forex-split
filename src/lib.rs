@@ -2,6 +2,7 @@ use clap::Parser;
 use std::io;
 use std::io::Write;
 
+/// Flush to stdout. If it is not possible, print an error message.
 macro_rules! flush {
     () => {
         io::stdout()
@@ -20,10 +21,12 @@ pub struct Args {
 }
 
 impl Args {
+    /// Parse command line arguments.
     pub fn new() -> Self {
         Self::parse()
     }
 
+    /// Return the domestic total from the command line arguments, if one exists. Otherwise ask the user to provide a domestic total.
     pub fn domestic_total(&self) -> f64 {
         match self.domestic_total {
             Some(total) => total,
@@ -35,6 +38,7 @@ impl Args {
         }
     }
 
+    /// Return the foreign total from the command line arguments, if one exists. Otherwise ask the user to provide a foreign total.
     pub fn foreign_total(&self) -> f64 {
         match self.foreign_total {
             Some(total) => total,
@@ -47,6 +51,7 @@ impl Args {
     }
 }
 
+/// Get terminal input and parse it to an f64. If no string that can be parsed to an f64 is provided, ask the user to provide a new string, until one that can be parsed to and f64 is provided. Prints an error message if unable to write get input from the terminal.
 fn input_float() -> f64 {
     let parsed_input = loop {
         let mut input = String::new();
