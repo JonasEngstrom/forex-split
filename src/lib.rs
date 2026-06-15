@@ -2,6 +2,14 @@ use clap::Parser;
 use std::io;
 use std::io::Write;
 
+macro_rules! flush {
+    () => {
+        io::stdout()
+            .flush()
+            .expect("Unable to write terminal output.")
+    };
+}
+
 /// Split a receipt in one currency into categories for bookkeeping in another currency.
 #[derive(Parser)]
 pub struct Args {
@@ -21,9 +29,7 @@ impl Args {
             Some(total) => total,
             None => {
                 print!("Please enter domestic total: ");
-                io::stdout()
-                    .flush()
-                    .expect("Unable to write terminal output.");
+                flush!();
                 input_float()
             },
         }
@@ -34,9 +40,7 @@ impl Args {
             Some(total) => total,
             None => {
                 print!("Please enter foreign total: ");
-                io::stdout()
-                    .flush()
-                    .expect("Unable to write terminal output.");
+                flush!();
                 input_float()
             },
         }
@@ -55,9 +59,7 @@ fn input_float() -> f64 {
                 Ok(parsed_input) => break parsed_input,
                 Err(_) => {
                     print!("Please try again. Enter a valid number: ");
-                    io::stdout()
-                        .flush()
-                        .expect("Unable to write terminal outpu.");
+                    flush!();
                     continue;
                 },
             }
