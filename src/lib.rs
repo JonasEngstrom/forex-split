@@ -2,6 +2,7 @@ use clap::Parser;
 use std::io;
 use std::io::Write;
 use std::process::exit;
+use std::collections::HashMap;
 
 /// Flush to stdout. If it is not possible, print an error message and exit the program.
 macro_rules! flush {
@@ -79,4 +80,46 @@ fn input_float() -> f64 {
             }
     };
     parsed_input
+}
+
+/// Store the conversion factor between the domestic and the foreign currency, as well as the category subtotals.
+pub struct CategoryList {
+    /// The conversion factor between the domestic and the foreign currency.
+    conversion_factor: f64,
+    /// The part of the foreign currency amount that has not yet been assigned to a category.
+    remaining_foreign_total: f64,
+    /// A list of categories and corresponding subtotals.
+    categories: HashMap<String, f64>,
+}
+
+impl CategoryList {
+    /// Create a new CategoryList, by taking an Args as the only argument.
+    pub fn new(args: Args) -> Self {
+        let domestic_total = args.domestic_total();
+        let foreign_total = args.foreign_total();
+        Self {
+            conversion_factor: domestic_total / &foreign_total,
+            remaining_foreign_total: foreign_total,
+            categories: HashMap::new(),
+        }
+    }
+
+    /// Return the assigned total.
+    fn category_grand_total(&self) -> f64 {
+        let mut grand_total: f64 = 0f64;
+
+        for (_, &value) in &self.categories {
+            grand_total += value;
+        }
+
+        grand_total
+    }
+
+    /// Add a value to a category or, if the category does not yet exist, create the category and assign the value.
+    fn assign_to_category(&mut self, category_name: String, value_to_assign: f64) -> () {
+        match &self.categories.get(&category_name) {
+            &Some(&value) => &self.categories.insert(category_name, &value + value_to_assign),
+            None => &self.categories.insert(category_name, value_to_assign),
+        };
+    }
 }
