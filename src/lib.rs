@@ -1,13 +1,18 @@
 use clap::Parser;
 use std::io;
 use std::io::Write;
+use std::process::exit;
 
-/// Flush to stdout. If it is not possible, print an error message.
+/// Flush to stdout. If it is not possible, print an error message and exit the program.
 macro_rules! flush {
     () => {
-        io::stdout()
-            .flush()
-            .expect("Unable to write terminal output.")
+        match io::stdout().flush() {
+            Ok(_) => (),
+            Err(_) => {
+                eprintln!("Unable to write terminal output.");
+                exit(1);
+            },
+        }
     };
 }
 
