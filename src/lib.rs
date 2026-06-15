@@ -56,13 +56,17 @@ impl Args {
     }
 }
 
-/// Get terminal input and parse it to an f64. If no string that can be parsed to an f64 is provided, ask the user to provide a new string, until one that can be parsed to and f64 is provided. Prints an error message if unable to write get input from the terminal.
+/// Get terminal input and parse it to an f64. If no string that can be parsed to an f64 is provided, ask the user to provide a new string, until one that can be parsed to and f64 is provided. Prints an error message and exits the program if unable to write get input from the terminal.
 fn input_float() -> f64 {
     let parsed_input = loop {
         let mut input = String::new();
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Unable to read terminal input.");
+        match io::stdin().read_line(&mut input) {
+            Ok(_) => (),
+            Err(_) => {
+                eprintln!("Unable to read terminal input.");
+                exit(1);
+            }
+        }
         match input
             .trim()
             .parse::<f64>() {
