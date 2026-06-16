@@ -245,3 +245,11 @@ impl CategoryList {
         }
     }
 }
+
+/// Run main program logic.
+pub fn run() -> () {
+    let args = Args::new();
+    let mut category_list = CategoryList::new(args);
+    category_list.input_loop();
+    category_list.print_split_table();
+}
