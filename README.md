@@ -1,3 +1,6 @@
+[![Build and Test](https://github.com/JonasEngstrom/forex-split/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/JonasEngstrom/forex-split/actions/workflows/rust.yml)
+[![Crates.io Version](https://img.shields.io/crates/v/forex-split)](https://crates.io/crates/forex-split)
+
 # Forex Split
 
 This crate was made to split a receipt in one currency into categories for bookkeeping in another currency, in order to facilitate bookkeeping in [YNAB](https://www.ynab.com/) while travelling in other countries.
