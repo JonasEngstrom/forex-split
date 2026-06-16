@@ -3,6 +3,7 @@ use std::io;
 use std::io::Write;
 use std::process::exit;
 use std::collections::HashMap;
+use std::fmt::Debug;
 
 /// Flush to stdout. If it is not possible, print an error message and exit the program.
 macro_rules! flush {
@@ -88,6 +89,7 @@ fn input_float() -> f64 {
 }
 
 /// Store the conversion factor between the domestic and the foreign currency, as well as the category subtotals.
+#[derive(Debug)]
 pub struct CategoryList {
     /// The conversion factor between the domestic and the foreign currency.
     conversion_factor: f64,
@@ -110,7 +112,7 @@ impl CategoryList {
     }
 
     /// Return the assigned total.
-    pub fn category_grand_total(&self) -> f64 {
+    fn category_grand_total(&self) -> f64 {
         let mut grand_total: f64 = 0f64;
 
         for (_, &value) in &self.categories {
@@ -121,7 +123,7 @@ impl CategoryList {
     }
 
     /// Add a value to a category or, if the category does not yet exist, create the category and assign the value.
-    pub fn assign_to_category(&mut self, category_name: String, value_to_assign: f64) -> () {
+    fn assign_to_category(&mut self, category_name: String, value_to_assign: f64) -> () {
         match &self.categories.get(&category_name) {
             &Some(&value) => &self.categories.insert(category_name, &value + value_to_assign),
             None => &self.categories.insert(category_name, value_to_assign),
@@ -129,11 +131,120 @@ impl CategoryList {
     }
 
     /// Get user input of categories.
-    pub fn input_loop(&self) -> () {
-        while self.remaining_foreign_total > 0f64 {
+    pub fn input_loop(&mut self) -> () {
+        type CounterType = u64;
+        let mut category_counter: CounterType = 0;
+
+        loop {
             print!("Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: {}): ", &self.remaining_foreign_total);
             flush!();
             input!(input);
+
+            // Check whether input is parsable, otherwise print an error message and try again.
+            match input
+                .trim()
+                .parse::<String>() {
+                    Ok(parsed_input) => {
+                        let mut split_input = parsed_input
+                            .split_whitespace()
+                            .collect::<Vec<_>>();
+                        
+                        // Check whether input was provided, otherwise assign remaining money to a category named Other and exit loop.
+                        let subtotal = match split_input.last() {
+                            Some(subtotal) => {
+
+                                // Check whether the last element on the line is an f64, otherwise print an error message and try again.
+                                match subtotal.parse::<f64>() {
+                                    Ok(subtotal) => subtotal,
+                                    Err(_) => {
+                                        eprintln!("Please enter the subtotal as the last element on the line, preceeded by a space. Try again.");
+                                        continue;
+                                    }
+                                }
+                            },
+                            None => {
+                                self.assign_to_category("Other".to_string(), self.remaining_foreign_total);
+                                break;
+                            }
+                        };
+
+                        // Check whether a high enough amount remains to subtract the subtotal.
+                        if self.remaining_foreign_total - subtotal < 0f64 {
+                            eprintln!("The entered subtotal exceeds the remaining total. Try again or just press enter to assign the entire remaining total to a category named Other.");
+                            continue;
+                        }
+
+                        // Prepare a category name.
+                        split_input.remove(split_input.len() - 1);
+                        let mut category_name = split_input.join(" ");
+
+                        // If no name for a category was provided, make a new unnamed, numbered category.
+                        if category_name == "" {
+                            // Check so that integer overflow does not occur.
+                            category_counter =  match category_counter.checked_add(1) {
+                                Some(new_counter_value) => new_counter_value,
+                                None => {
+                                    println!("A maximum of {} unnamed categories are supported. Please name category explicitly. Try again.", CounterType::MAX);
+                                    continue;
+                                }
+                            };
+
+                            // Make new unnamed category name.
+                            category_name = format!("Unnamed category {}", category_counter);
+                        }
+
+                        // Assign subtotal to category.
+                        self.assign_to_category(category_name, subtotal);
+
+                        // Subtract the subtotal from the remaining amout.
+                        self.remaining_foreign_total -= subtotal;
+                        
+                        // Exit loop if all money has been assigned.
+                        if self.remaining_foreign_total == 0f64 {
+                            break;
+                        }
+                    },
+                    Err(_) => {
+                        eprintln!("Unable to parse terminal input. Try again.");
+                        continue;
+                    },
+                }
+        }
+    }
+
+    /// Returns a sorted list of category names, with named categories first, unnamed categories in numerical order second, and the Other category last.
+    fn ordered_category_list(&self) -> Vec<&String> {
+        let mut named_categories = Vec::new();
+        let mut unnamed_categories = Vec::new();
+        let mut other_category = Vec::new();
+
+        for category in self.categories.keys().collect::<Vec<_>>() {
+            if *category == "Other" {
+                other_category.push(category);
+                continue;
+            } else if category.starts_with("Unnamed category") {
+                unnamed_categories.push(category);
+                continue;
+            } else {
+                named_categories.push(category);
+                continue;
+            }
+        }
+        
+        named_categories.sort();
+        unnamed_categories.sort();
+        
+        let mut ordered_categories = named_categories;
+        ordered_categories.append(&mut unnamed_categories);
+        ordered_categories.append(&mut other_category);
+        
+        ordered_categories
+    }
+
+    pub fn print_split_table(&self) -> () {
+        println!("{:<20}{:>20}{:>20}", "Category", "Foreign subtotal", "Domestic subtotal");
+        for category in self.ordered_category_list() {
+            println!("{:<20}{:>20.2}{:>20.2}", category, self.categories.get(category).unwrap(), self.categories.get(category).unwrap() * self.conversion_factor);
         }
     }
 }
