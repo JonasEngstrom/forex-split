@@ -111,17 +111,6 @@ impl CategoryList {
         }
     }
 
-    /// Return the assigned total.
-    fn category_grand_total(&self) -> f64 {
-        let mut grand_total: f64 = 0f64;
-
-        for (_, &value) in &self.categories {
-            grand_total += value;
-        }
-
-        grand_total
-    }
-
     /// Add a value to a category or, if the category does not yet exist, create the category and assign the value.
     fn assign_to_category(&mut self, category_name: String, value_to_assign: f64) -> () {
         match &self.categories.get(&category_name) {
@@ -241,10 +230,18 @@ impl CategoryList {
         ordered_categories
     }
 
+    /// Prints a table of categories with foreign amounts converted to the domestic currency.
     pub fn print_split_table(&self) -> () {
         println!("{:<20}{:>20}{:>20}", "Category", "Foreign subtotal", "Domestic subtotal");
         for category in self.ordered_category_list() {
-            println!("{:<20}{:>20.2}{:>20.2}", category, self.categories.get(category).unwrap(), self.categories.get(category).unwrap() * self.conversion_factor);
+            let foreign_amount = match self.categories.get(category) {
+                Some(foreign_amount) => foreign_amount,
+                None => {
+                    eprint!("Tried to read a category that does not exist from memory. Exiting.");
+                    exit(1);
+                }
+            };
+            println!("{:<20}{:>20.2}{:>20.2}", category, foreign_amount, foreign_amount * self.conversion_factor);
         }
     }
 }
