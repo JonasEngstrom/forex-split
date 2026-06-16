@@ -1,6 +1,6 @@
 [package]
 name = "forex-split"
-version = "0.1.0"
+version = "1.0.1"
 edition = "2024"
 description = "Split a receipt in one currency into categories for bookkeeping in another currency."
 readme = "README.md"
