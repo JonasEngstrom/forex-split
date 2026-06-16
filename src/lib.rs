@@ -17,6 +17,20 @@ macro_rules! flush {
     };
 }
 
+/// Get input from terminal and store it in a variable.
+macro_rules! input {
+    ($input:ident) => {
+        let mut $input = String::new();
+        match io::stdin().read_line(&mut $input) {
+            Ok(_) => (),
+            Err(_) => {
+                eprintln!("Unable to read terminal input.");
+                exit(1);
+            },
+        }
+    };
+}
+
 /// Split a receipt in one currency into categories for bookkeeping in another currency.
 #[derive(Parser)]
 pub struct Args {
@@ -32,42 +46,33 @@ impl Args {
         Self::parse()
     }
 
-    /// Return the domestic total from the command line arguments, if one exists. Otherwise ask the user to provide a domestic total.
-    pub fn domestic_total(&self) -> f64 {
-        match self.domestic_total {
+    /// Get a total from command line arguments, if available, otherwise ask the user to enter a total.
+    fn get_total(desired_total: Option<f64>, prompt: &str) -> f64 {
+        match desired_total {
             Some(total) => total,
             None => {
-                print!("Please enter domestic total: ");
+                print!("{}", prompt);
                 flush!();
                 input_float()
             },
         }
     }
 
+    /// Return the domestic total from the command line arguments, if one exists. Otherwise ask the user to provide a domestic total.
+    fn domestic_total(&self) -> f64 {
+        Self::get_total(self.domestic_total, "Please enter domestic total: ")
+    }
+
     /// Return the foreign total from the command line arguments, if one exists. Otherwise ask the user to provide a foreign total.
-    pub fn foreign_total(&self) -> f64 {
-        match self.foreign_total {
-            Some(total) => total,
-            None => {
-                print!("Please enter foreign total: ");
-                flush!();
-                input_float()
-            },
-        }
+    fn foreign_total(&self) -> f64 {
+        Self::get_total(self.foreign_total, "Please enter foreign total: ")
     }
 }
 
 /// Get terminal input and parse it to an f64. If no string that can be parsed to an f64 is provided, ask the user to provide a new string, until one that can be parsed to and f64 is provided. Prints an error message and exits the program if unable to write get input from the terminal.
 fn input_float() -> f64 {
     let parsed_input = loop {
-        let mut input = String::new();
-        match io::stdin().read_line(&mut input) {
-            Ok(_) => (),
-            Err(_) => {
-                eprintln!("Unable to read terminal input.");
-                exit(1);
-            }
-        }
+        input!(input);
         match input
             .trim()
             .parse::<f64>() {
@@ -105,7 +110,7 @@ impl CategoryList {
     }
 
     /// Return the assigned total.
-    fn category_grand_total(&self) -> f64 {
+    pub fn category_grand_total(&self) -> f64 {
         let mut grand_total: f64 = 0f64;
 
         for (_, &value) in &self.categories {
@@ -116,10 +121,19 @@ impl CategoryList {
     }
 
     /// Add a value to a category or, if the category does not yet exist, create the category and assign the value.
-    fn assign_to_category(&mut self, category_name: String, value_to_assign: f64) -> () {
+    pub fn assign_to_category(&mut self, category_name: String, value_to_assign: f64) -> () {
         match &self.categories.get(&category_name) {
             &Some(&value) => &self.categories.insert(category_name, &value + value_to_assign),
             None => &self.categories.insert(category_name, value_to_assign),
         };
+    }
+
+    /// Get user input of categories.
+    pub fn input_loop(&self) -> () {
+        while self.remaining_foreign_total > 0f64 {
+            print!("Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: {}): ", &self.remaining_foreign_total);
+            flush!();
+            input!(input);
+        }
     }
 }
