@@ -250,7 +250,7 @@ impl CategoryList {
         let mut category_counter: CounterType = 0;
 
         loop {
-            print!("Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: {}): ", &self.remaining_foreign_total);
+            print!("Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: {:.2}): ", &self.remaining_foreign_total);
             flush!();
             input!(input);
 
