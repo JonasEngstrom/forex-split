@@ -388,3 +388,18 @@ pub fn run() -> () {
     category_list.input_loop();
     category_list.print_split_table();
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    use std::collections::HashMap;
+
+    #[test]
+    fn category_list_new_works() -> Result<(), String> {
+        let test_category_list = CategoryList::new(Args { domestic_total: Some(10f64), foreign_total: Some(20f64) });
+        let _empty_hash_map: HashMap<String, f64> = HashMap::new();
+        assert!(matches!(test_category_list, CategoryList { conversion_factor: 0.5f64, remaining_foreign_total: 20f64, categories: _empty_hash_map }));
+        Ok(())
+    }
+}
