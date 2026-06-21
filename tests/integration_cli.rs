@@ -81,6 +81,29 @@ fn cli_prompts_for_both_missing_totals() {
 }
 
 #[test]
+fn cli_retries_after_invalid_domestic_total() {
+    let output = run_binary(&[], "abc\n299.28\n26.84\n\n");
+
+    assert!(output.status.success());
+
+    let stdout = stdout_text(&output);
+    assert!(stdout.contains("Please try again. Enter a valid number:"));
+    assert!(stdout.contains("Please enter foreign total:"));
+    assert!(stdout.contains("Other"));
+}
+
+#[test]
+fn cli_retries_after_invalid_foreign_total() {
+    let output = run_binary(&[], "299.28\nabc\n26.84\n\n");
+
+    assert!(output.status.success());
+
+    let stdout = stdout_text(&output);
+    assert!(stdout.contains("Please try again. Enter a valid number:"));
+    assert!(stdout.contains("Other"));
+}
+
+#[test]
 fn cli_handles_unnamed_categories_and_other() {
     let output = run_binary(&["299.28", "26.84"], "6.9\n17.5\n\n");
 
@@ -89,6 +112,30 @@ fn cli_handles_unnamed_categories_and_other() {
     let stdout = stdout_text(&output);
     assert!(stdout.contains("Unnamed category 1"));
     assert!(stdout.contains("Unnamed category 2"));
+    assert!(stdout.contains("Other"));
+}
+
+#[test]
+fn cli_finishes_when_remaining_total_reaches_zero() {
+    let output = run_binary(&["10", "10"], "Food 10\n");
+
+    assert!(output.status.success());
+
+    let stdout = stdout_text(&output);
+    assert!(stdout.contains("Food"));
+    assert!(stdout.contains("10.00"));
+    assert!(!stdout.contains("Other"));
+}
+
+#[test]
+fn cli_rejects_oversized_subtotal_and_recovers() {
+    let output = run_binary(&["299.28", "26.84"], "Food 30\n\n");
+
+    assert!(output.status.success());
+
+    let stderr = stderr_text(&output);
+    let stdout = stdout_text(&output);
+    assert!(stderr.contains("The entered subtotal exceeds the remaining total"));
     assert!(stdout.contains("Other"));
 }
 
