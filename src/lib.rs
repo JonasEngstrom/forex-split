@@ -408,6 +408,31 @@ mod tests {
     }
 
     #[test]
+    fn args_get_total_returns_provided_value() -> Result<(), String> {
+        assert_eq!(Args::get_total(Some(12.34f64), "unused prompt"), 12.34f64);
+
+        Ok(())
+    }
+
+    #[test]
+    fn args_domestic_total_returns_provided_value() -> Result<(), String> {
+        let test_args = Args { domestic_total: Some(10f64), foreign_total: Some(20f64) };
+
+        assert_eq!(test_args.domestic_total(), 10f64);
+
+        Ok(())
+    }
+
+    #[test]
+    fn args_foreign_total_returns_provided_value() -> Result<(), String> {
+        let test_args = Args { domestic_total: Some(10f64), foreign_total: Some(20f64) };
+
+        assert_eq!(test_args.foreign_total(), 20f64);
+
+        Ok(())
+    }
+
+    #[test]
     fn inital_category_list_assign_to_category_works() -> Result<(), String> {
         let mut test_category_list = CategoryList::new(Args { domestic_total: Some(10f64), foreign_total: Some(20f64) });
         let mut _test_hash_map: HashMap<String, f64> = HashMap::new();
