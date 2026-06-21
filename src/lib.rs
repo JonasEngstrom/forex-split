@@ -61,9 +61,9 @@
 //! 
 //! ```bash
 //! forex-split 299.28 26.84
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 26.84): Alcohol 6.9
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 19.94): Food 17.5
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 2.44): Tip 2.44
+//! Foreign subtotal (category subtotal) (remaining: 26.84): Alcohol 6.9
+//! Foreign subtotal (category subtotal) (remaining: 19.94): Food 17.5
+//! Foreign subtotal (category subtotal) (remaining: 2.44): Tip 2.44
 //! Category    Foreign subtotal    Domestic subtotal
 //! Alcohol                 6.90                76.94
 //! Food                   17.50               195.13
@@ -74,9 +74,9 @@
 //! 
 //! ```bash
 //! forex-split 299.28 26.84
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 26.84): Alcohol 6.9
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 19.94): Food 17.5
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 2.44):
+//! Foreign subtotal (category subtotal) (remaining: 26.84): Alcohol 6.9
+//! Foreign subtotal (category subtotal) (remaining: 19.94): Food 17.5
+//! Foreign subtotal (category subtotal) (remaining: 2.44):
 //! Category    Foreign subtotal    Domestic subtotal
 //! Alcohol                 6.90                76.94
 //! Food                   17.50               195.13
@@ -87,9 +87,9 @@
 //! 
 //! ```bash
 //! forex-split 299.28 26.84
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 26.84): 6.9
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 19.94): 17.5
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 2.44): 2.44
+//! Foreign subtotal (category subtotal) (remaining: 26.84): 6.9
+//! Foreign subtotal (category subtotal) (remaining: 19.94): 17.5
+//! Foreign subtotal (category subtotal) (remaining: 2.44): 2.44
 //! Category    Foreign subtotal    Domestic subtotal
 //! Unnamed Category 1      6.90                76.94
 //! Unnamed Category 2     17.50               195.13
@@ -100,9 +100,9 @@
 //! 
 //! ```bash
 //! forex-split 299.28 26.84
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 26.84): 6.9
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 19.94): 17.5
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 2.44):
+//! Foreign subtotal (category subtotal) (remaining: 26.84): 6.9
+//! Foreign subtotal (category subtotal) (remaining: 19.94): 17.5
+//! Foreign subtotal (category subtotal) (remaining: 2.44):
 //! Unnamed Category 1      6.90                76.94
 //! Unnamed Category 2     17.50               195.13
 //! Other                   2.44                27.21
@@ -114,10 +114,10 @@
 //! 
 //! ```bash
 //! forex-split 299.28 26.84
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 26.84): Alcohol 6.9
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 19.94): Food 9.94
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 10.00): Food 7.56
-//! Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: 2.44): Tip 2.44
+//! Foreign subtotal (category subtotal) (remaining: 26.84): Alcohol 6.9
+//! Foreign subtotal (category subtotal) (remaining: 19.94): Food 9.94
+//! Foreign subtotal (category subtotal) (remaining: 10.00): Food 7.56
+//! Foreign subtotal (category subtotal) (remaining: 2.44): Tip 2.44
 //! Category    Foreign subtotal    Domestic subtotal
 //! Alcohol                 6.90                76.94
 //! Food                   17.50               195.13
@@ -250,7 +250,7 @@ impl CategoryList {
         let mut category_counter: CounterType = 0;
 
         loop {
-            print!("Enter subtotal in foreign currency (category subtotal) (remaining money to categorize: {:.2}): ", &self.remaining_foreign_total);
+            print!("Foreign subtotal (category subtotal) (remaining: {:.2}): ", &self.remaining_foreign_total);
             flush!();
             input!(input);
 
