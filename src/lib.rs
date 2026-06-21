@@ -408,10 +408,25 @@ mod tests {
     }
 
     #[test]
-    fn category_list_assign_to_category_works() -> Result<(), String> {
+    fn inital_category_list_assign_to_category_works() -> Result<(), String> {
         let mut test_category_list = CategoryList::new(Args { domestic_total: Some(10f64), foreign_total: Some(20f64) });
         let mut _test_hash_map: HashMap<String, f64> = HashMap::new();
         _test_hash_map.insert("Foo".to_string(), 5f64);
+        test_category_list.assign_to_category("Foo".to_string(), 5f64);
+
+        assert_eq!(test_category_list.conversion_factor, 0.5f64);
+        assert_eq!(test_category_list.remaining_foreign_total, 20f64);
+        assert_eq!(test_category_list.categories, _test_hash_map);
+        
+        Ok(())
+    }
+
+    #[test]
+    fn second_category_list_assign_to_category_works() -> Result<(), String> {
+        let mut test_category_list = CategoryList::new(Args { domestic_total: Some(10f64), foreign_total: Some(20f64) });
+        let mut _test_hash_map: HashMap<String, f64> = HashMap::new();
+        _test_hash_map.insert("Foo".to_string(), 10f64);
+        test_category_list.assign_to_category("Foo".to_string(), 5f64);
         test_category_list.assign_to_category("Foo".to_string(), 5f64);
 
         assert_eq!(test_category_list.conversion_factor, 0.5f64);
