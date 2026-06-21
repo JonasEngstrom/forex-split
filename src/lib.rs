@@ -388,3 +388,68 @@ pub fn run() -> () {
     category_list.input_loop();
     category_list.print_split_table();
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    use std::collections::HashMap;
+
+    #[test]
+    fn category_list_new_works() -> Result<(), String> {
+        let test_category_list = CategoryList::new(Args { domestic_total: Some(10f64), foreign_total: Some(20f64) });
+        let _empty_hash_map: HashMap<String, f64> = HashMap::new();
+
+        assert_eq!(test_category_list.conversion_factor, 0.5f64);
+        assert_eq!(test_category_list.remaining_foreign_total, 20f64);
+        assert_eq!(test_category_list.categories, _empty_hash_map);
+        
+        Ok(())
+    }
+
+    #[test]
+    fn inital_category_list_assign_to_category_works() -> Result<(), String> {
+        let mut test_category_list = CategoryList::new(Args { domestic_total: Some(10f64), foreign_total: Some(20f64) });
+        let mut _test_hash_map: HashMap<String, f64> = HashMap::new();
+        _test_hash_map.insert("Foo".to_string(), 5f64);
+        test_category_list.assign_to_category("Foo".to_string(), 5f64);
+
+        assert_eq!(test_category_list.conversion_factor, 0.5f64);
+        assert_eq!(test_category_list.remaining_foreign_total, 20f64);
+        assert_eq!(test_category_list.categories, _test_hash_map);
+        
+        Ok(())
+    }
+
+    #[test]
+    fn second_category_list_assign_to_category_works() -> Result<(), String> {
+        let mut test_category_list = CategoryList::new(Args { domestic_total: Some(10f64), foreign_total: Some(20f64) });
+        let mut _test_hash_map: HashMap<String, f64> = HashMap::new();
+        _test_hash_map.insert("Foo".to_string(), 10f64);
+        test_category_list.assign_to_category("Foo".to_string(), 5f64);
+        test_category_list.assign_to_category("Foo".to_string(), 5f64);
+
+        assert_eq!(test_category_list.conversion_factor, 0.5f64);
+        assert_eq!(test_category_list.remaining_foreign_total, 20f64);
+        assert_eq!(test_category_list.categories, _test_hash_map);
+        
+        Ok(())
+    }
+
+    #[test]
+    fn ordered_categories_sorts_categories_correctly() -> Result<(), String> {
+        let mut test_category_list = CategoryList::new(Args { domestic_total: Some(10f64), foreign_total: Some(20f64) });
+        test_category_list.assign_to_category("Foo".to_string(), 1f64);
+        test_category_list.assign_to_category("Bar".to_string(), 1f64);
+        test_category_list.assign_to_category("Unnamed category 2".to_string(), 1f64);
+        test_category_list.assign_to_category("Unnamed category 1".to_string(), 1f64);
+        test_category_list.assign_to_category("Unnamed category 8".to_string(), 1f64);
+        test_category_list.assign_to_category("Unnamed category 5".to_string(), 1f64);
+        test_category_list.assign_to_category("Other".to_string(), 1f64);
+        let correct_order = vec!["Bar", "Foo", "Unnamed category 1", "Unnamed category 2", "Unnamed category 5", "Unnamed category 8", "Other"];
+
+        assert_eq!(test_category_list.ordered_category_list(), correct_order);
+
+        Ok(())
+    }
+}

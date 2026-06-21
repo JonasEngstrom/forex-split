@@ -1,5 +1,6 @@
 [![Build and Test](https://github.com/JonasEngstrom/forex-split/actions/workflows/rust.yml/badge.svg?branch=main)](https://github.com/JonasEngstrom/forex-split/actions/workflows/rust.yml)
 [![Crates.io Version](https://img.shields.io/crates/v/forex-split)](https://crates.io/crates/forex-split)
+[![codecov](https://codecov.io/gh/JonasEngstrom/forex-split/graph/badge.svg?token=X6RFGVQ0IE)](https://codecov.io/gh/JonasEngstrom/forex-split)
 
 # Forex Split
 
